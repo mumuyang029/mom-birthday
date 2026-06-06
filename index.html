@@ -13,6 +13,36 @@
             background-color: #1a1a2e;
         }
 
+        /* --- 横屏提示遮罩 --- */
+        #landscape-hint {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+            z-index: 9999;
+            display: none;
+        }
+
+        #landscape-hint .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: rotate 3s infinite linear;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         /* --- 第一部分：许愿流星区 --- */
         .wishing-section {
             height: 100vh;
@@ -203,9 +233,37 @@
             z-index: 1000;
             display: none;
         }
+
+        /* --- 响应式优化：小屏设备 --- */
+        @media (max-width: 768px) {
+            h1.title { font-size: 2rem; }
+            .photo-frame { 
+                width: 90%; 
+                height: 350px; 
+                margin: 0 auto; 
+                transform: none; 
+            }
+            .message-area { 
+                width: 90%; 
+                margin-top: 30px; 
+            }
+            .album-section { 
+                flex-direction: column; 
+                padding: 30px 5%; 
+                gap: 30px;
+            }
+            .input-area input { width: 180px; }
+        }
     </style>
 </head>
 <body>
+
+    <!-- 横屏提示 -->
+    <div id="landscape-hint">
+        <div class="icon">📱</div>
+        <p>为了更好的体验，请将手机<br><strong>横向旋转</strong>哦~</p>
+        <p style="margin-top: 15px; font-size: 0.9rem; color: #aaa;">（妈妈，转一下手机就能看到完整照片啦！）</p>
+    </div>
 
     <!-- 背景音乐 -->
     <audio id="bgm">
@@ -391,28 +449,42 @@
                 document.querySelector('.music-control').innerText = '⏸';
             }).catch(e => {
                 console.warn("播放失败（可能被浏览器阻止）:", e);
-                // 不弹窗，避免打扰用户
             });
         }
 
         // 【关键】用户首次交互时自动播放
         function tryAutoPlay() {
-            playMusic(); // 尝试播放
+            playMusic();
             document.body.removeEventListener('click', tryAutoPlay);
             document.body.removeEventListener('touchstart', tryAutoPlay);
         }
 
-        // 监听首次用户交互
         document.body.addEventListener('click', tryAutoPlay, { once: true });
         document.body.addEventListener('touchstart', tryAutoPlay, { once: true });
 
-        // 音频加载错误处理
         bgm.addEventListener('error', () => {
             if (!hasError) {
                 document.getElementById('errorHint').style.display = 'block';
                 hasError = true;
             }
         });
+
+        // --- 5. 横屏检测 ---
+        function checkOrientation() {
+            const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isPortrait = window.innerHeight > window.innerWidth;
+            const hint = document.getElementById('landscape-hint');
+            if (isMobile && isPortrait) {
+                hint.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            } else {
+                hint.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
+        window.addEventListener('load', checkOrientation);
+        window.addEventListener('resize', checkOrientation);
     </script>
 </body>
 </html>
