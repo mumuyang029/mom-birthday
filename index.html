@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>致全世界最好的妈妈·生日快乐</title>
+    <style>
+        /* --- 全局样式 --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            overflow-x: hidden;
+            background-color: #1a1a2e;
+        }
+
+        /* --- 第一部分：许愿流星区 --- */
+        .wishing-section {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        h1.title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #ffeb3b, 0 0 20px #ff9800;
+            animation: glow 2s infinite alternate;
+            z-index: 20;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #fff, 0 0 20px #ff00de; }
+            to { text-shadow: 0 0 20px #fff, 0 0 30px #ff00de, 0 0 40px #ff00de; }
+        }
+
+        .cake-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 15px gold);
+            z-index: 20;
+        }
+
+        .input-area {
+            z-index: 20;
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+        }
+
+        input[type="text"] {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+            width: 250px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 25px;
+            border-radius: 20px;
+            border: none;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover { transform: scale(1.05); }
+
+        #star-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* --- 第二部分：相册时光区 --- */
+        .album-section {
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #24243e 0%, #fdfbf7 20%);
+            padding: 50px 10%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .photo-frame {
+            width: 50%;
+            height: 500px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            transform: rotate(-2deg);
+            transition: transform 0.3s;
+        }
+
+        .photo-frame:hover { transform: rotate(0deg) scale(1.02); }
+
+        .photo-container {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border-radius: 5px;
+            position: relative;
+            background: #eee url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="%23f0f0f0" width="100" height="100"/><text x="50" y="50" font-size="10" fill="%23ccc" text-anchor="middle">加载中...</text></svg>') no-repeat center;
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .photo-container img.active { opacity: 1; }
+
+        .sticker {
+            position: absolute;
+            font-size: 2rem;
+            z-index: 5;
+        }
+        .s1 { top: -20px; right: -20px; transform: rotate(15deg); }
+        .s2 { bottom: -20px; left: -20px; transform: rotate(-15deg); }
+
+        .message-area {
+            width: 45%;
+            color: #4a4a4a;
+            line-height: 1.8;
+        }
+
+        .message-area h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #d4a373;
+            border-bottom: 2px dashed #d4a373;
+            display: inline-block;
+        }
+
+        .message-content p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .butterfly {
+            position: fixed;
+            font-size: 24px;
+            animation: fly 10s linear infinite;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        @keyframes fly {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translate(100vw, -100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+            background: rgba(255,255,255,0.8);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 1.2rem;
+        }
+
+        /* 错误提示 */
+        .error-hint {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 背景音乐 -->
+    <audio id="bgm">
+        <source src="birthday.mp3" type="audio/mpeg">
+        <source src="birthday.ogg" type="audio/ogg">
+        您的浏览器不支持音频。
+    </audio>
+    <div class="music-control" onclick="toggleMusic()">🎵</div>
+    <div class="error-hint" id="errorHint">⚠️ 图片或音乐加载失败，请检查文件是否上传成功</div>
+
+    <!-- 上部：许愿流星区 -->
+    <section class="wishing-section">
+        <canvas id="star-canvas"></canvas>
+        <h1 class="title">致全世界最好的妈妈 · 生日快乐</h1>
+        <div class="cake-icon">🎂</div>
+        <div class="input-area">
+            <input type="text" id="wishInput" placeholder="妈妈，写下您的心愿...">
+            <button onclick="makeWish()">许下心愿 ✨</button>
+        </div>
+    </section>
+
+    <!-- 下部：亲子时光相册区 -->
+    <section class="album-section">
+        <div class="butterfly" style="top: 80%; left: 10%; animation-duration: 15s;">🦋</div>
+        <div class="butterfly" style="top: 60%; left: 50%; animation-duration: 12s; animation-delay: 2s;">🦋</div>
+
+        <div class="photo-frame">
+            <span class="sticker s1">🎀</span>
+            <span class="sticker s2">🌸</span>
+            <div class="photo-container" id="gallery"></div>
+        </div>
+
+        <div class="message-area">
+            <h2>时光里的爱 ❤️</h2>
+            <div class="message-content">
+                <p><strong>亲爱的妈妈：</strong></p>
+                <p>看着这些照片，仿佛时间都慢了下来。从那个充满蓝色光影的隧道，到黄鹤楼下的灿烂笑容，每一个瞬间都是我们最珍贵的宝藏。</p>
+                <p>小时候，您牵着我的手看世界；现在，换我陪您走过四季。愿岁月对您温柔以待，愿您的每一天都像花儿一样绽放。</p>
+                <p>在这个特别的日子里，只想对您说：<br><strong>妈妈，我爱您！生日快乐！</strong> 🎉</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // --- 1. 相册轮播 ---
+        const totalPhotos = 10;
+        const gallery = document.getElementById('gallery');
+        let hasError = false;
+
+        for (let i = 1; i <= totalPhotos; i++) {
+            const img = document.createElement('img');
+            img.src = i + '.jpg';
+            img.alt = '照片 ' + i;
+            img.onerror = () => {
+                if (!hasError) {
+                    document.getElementById('errorHint').style.display = 'block';
+                    hasError = true;
+                }
+            };
+            if (i === 1) img.classList.add('active');
+            gallery.appendChild(img);
+        }
+
+        let currentPhoto = 0;
+        const photos = document.querySelectorAll('.photo-container img');
+
+        setInterval(() => {
+            photos[currentPhoto].classList.remove('active');
+            currentPhoto = (currentPhoto + 1) % totalPhotos;
+            photos[currentPhoto].classList.add('active');
+        }, 3000);
+
+        // --- 2. 星空与流星 ---
+        const canvas = document.getElementById('star-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const stars = [];
+        for(let i=0; i<100; i++) {
+            stars.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                size: Math.random() * 2,
+                speed: Math.random() * 0.5
+            });
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = "white";
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+                star.y -= star.speed;
+                if(star.y < 0) star.y = height;
+            });
+            requestAnimationFrame(drawStars);
+        }
+        drawStars();
+
+        setInterval(() => {
+            const meteor = document.createElement('div');
+            meteor.style.position = 'absolute';
+            meteor.style.top = Math.random() * 50 + '%';
+            meteor.style.left = Math.random() * 100 + '%';
+            meteor.style.width = '100px';
+            meteor.style.height = '2px';
+            meteor.style.background = 'linear-gradient(to right, transparent, white)';
+            meteor.style.transform = 'rotate(-45deg)';
+            meteor.style.transition = 'all 1s linear';
+            meteor.style.opacity = '0';
+            document.querySelector('.wishing-section').appendChild(meteor);
+
+            setTimeout(() => {
+                meteor.style.opacity = '1';
+                meteor.style.transform = 'translate(-200px, 200px) rotate(-45deg)';
+            }, 50);
+
+            setTimeout(() => meteor.remove(), 1100);
+        }, 3000);
+
+        // --- 3. 许愿 ---
+        function makeWish() {
+            const input = document.getElementById('wishInput');
+            const text = input.value.trim();
+            if(!text) return alert("请先输入心愿哦~");
+
+            const wishStar = document.createElement('div');
+            wishStar.innerText = text + " ✨";
+            wishStar.style.cssText = `
+                position: fixed;
+                left: 50%;
+                bottom: 20%;
+                color: #fff;
+                font-size: 20px;
+                font-weight: bold;
+                text-shadow: 0 0 10px gold;
+                transition: all 2s ease-in;
+                z-index: 100;
+                transform: translateX(-50%);
+            `;
+            document.body.appendChild(wishStar);
+
+            setTimeout(() => {
+                wishStar.style.bottom = '120%';
+                wishStar.style.opacity = '0';
+                wishStar.style.transform = 'translate(-50%, -100%) scale(0.5)';
+            }, 100);
+
+            setTimeout(() => {
+                wishStar.remove();
+                alert("愿望已发送至星空！妈妈一定会心想事成的！🌟");
+            }, 2000);
+
+            input.value = "";
+        }
+
+        // --- 4. 音乐控制（增强自动播放）---
+        const bgm = document.getElementById('bgm');
+        let isPlaying = false;
+
+        function toggleMusic() {
+            if (isPlaying) {
+                bgm.pause();
+                isPlaying = false;
+                document.querySelector('.music-control').innerText = '🎵';
+            } else {
+                playMusic();
+            }
+        }
+
+        function playMusic() {
+            bgm.play().then(() => {
+                isPlaying = true;
+                document.querySelector('.music-control').innerText = '⏸';
+            }).catch(e => {
+                console.warn("播放失败（可能被浏览器阻止）:", e);
+                // 不弹窗，避免打扰用户
+            });
+        }
+
+        // 【关键】用户首次交互时自动播放
+        function tryAutoPlay() {
+            playMusic(); // 尝试播放
+            document.body.removeEventListener('click', tryAutoPlay);
+            document.body.removeEventListener('touchstart', tryAutoPlay);
+        }
+
+        // 监听首次用户交互
+        document.body.addEventListener('click', tryAutoPlay, { once: true });
+        document.body.addEventListener('touchstart', tryAutoPlay, { once: true });
+
+        // 音频加载错误处理
+        bgm.addEventListener('error', () => {
+            if (!hasError) {
+                document.getElementById('errorHint').style.display = 'block';
+                hasError = true;
+            }
+        });
+    </script>
+</body>
+</html>
